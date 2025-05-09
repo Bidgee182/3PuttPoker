@@ -1,0 +1,38 @@
+/* Google Fonts must be first */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Poppins', sans-serif;
+  @apply bg-green-800 text-white;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+input, select, button {
+  @apply focus:outline-none focus:ring-2 focus:ring-yellow-400;
+}
+
+button {
+  @apply transition-all duration-200 ease-in-out;
+}
+
+input, select {
+  @apply bg-white text-black px-3 py-2 rounded shadow;
+}
+
+h1, h2, h3, h4 {
+  @apply tracking-wide;
+}
+
+/* Bonus animation */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out;
+}
