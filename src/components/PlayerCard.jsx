@@ -1,54 +1,109 @@
 import React from 'react'
 
 export default function PlayerCard({ player, onUpdate }) {
-  const handleToggle = (field) => {
-    const newPlayer = {
-      ...player,
-      [field]: !player[field],
-    }
-
-    // 🔁 Mutually exclusive logic for 3/4 pointer
-    if (field === 'threePointer' && !player.threePointer) {
-      newPlayer.fourPointer = false
-    }
-
-    if (field === 'fourPointer' && !player.fourPointer) {
-      newPlayer.threePointer = false
-    }
-
+  const toggle = (field, exclusiveFields = []) => {
+    const newPlayer = { ...player }
+    const currentlyOn = player[field]
+    exclusiveFields.forEach(f => {
+      newPlayer[f] = false
+    })
+    newPlayer[field] = !currentlyOn
     onUpdate(newPlayer)
   }
 
-  const scoreOptions = [
-    { key: 'onePutt', label: '⛳ One Putt' },
-    { key: 'threePutt', label: '😩 Three Putt' },
-    { key: 'threePointer', label: '3️⃣ 3 Pointer' },
-    { key: 'fourPointer', label: '4️⃣ 4 Pointer' },
-    { key: 'nearestPin', label: '📍 Nearest Pin' },
-    { key: 'sandSave', label: '🏖️ Sand Save' },
-    { key: 'outOfBounds', label: '🚧 Out of Bounds' },
-    { key: 'wipe', label: '💥 Wipe' },
-  ]
-
   return (
-    <div className="bg-gray-100 p-3 rounded-xl shadow text-black space-y-2">
+    <div className="bg-gray-50 p-4 rounded-xl shadow space-y-2 text-black">
       <h3 className="font-bold text-lg">{player.name}</h3>
 
-      <div className="grid grid-cols-2 gap-2 text-sm">
-        {scoreOptions.map(({ key, label }) => (
-          <button
-            key={key}
-            type="button"
-            onClick={() => handleToggle(key)}
-            className={`w-full px-3 py-2 rounded-full font-medium border text-sm transition ${
-              player[key]
-                ? 'bg-green-600 text-white border-green-700'
-                : 'bg-white text-black border-gray-300 hover:bg-gray-100'
-            }`}
-          >
-            {label}
-          </button>
-        ))}
+      {/* One Putt / Three Putt - mutually exclusive */}
+      <div className="flex flex-wrap gap-2">
+        <button
+          onClick={() => toggle('onePutt', ['threePutt'])}
+          className={`px-3 py-2 rounded-lg shadow ${
+            player.onePutt ? 'bg-green-600 text-white' : 'bg-gray-200 text-black'
+          }`}
+        >
+          ⛳ One Putt
+        </button>
+        <button
+          onClick={() => toggle('threePutt', ['onePutt'])}
+          className={`px-3 py-2 rounded-lg shadow ${
+            player.threePutt ? 'bg-red-600 text-white' : 'bg-gray-200 text-black'
+          }`}
+        >
+          😩 Three Putt
+        </button>
+      </div>
+
+      {/* Nearest, Sand Save, OB */}
+      <div className="flex flex-wrap gap-2">
+        <button
+          onClick={() => toggle('nearestPin')}
+          className={`px-3 py-2 rounded-lg shadow ${
+            player.nearestPin ? 'bg-green-600 text-white' : 'bg-gray-200 text-black'
+          }`}
+        >
+          📍 Nearest Pin
+        </button>
+        <button
+          onClick={() => toggle('sandSave')}
+          className={`px-3 py-2 rounded-lg shadow ${
+            player.sandSave ? 'bg-green-600 text-white' : 'bg-gray-200 text-black'
+          }`}
+        >
+          🏖️ Sand Save
+        </button>
+        <button
+          onClick={() => toggle('outOfBounds')}
+          className={`px-3 py-2 rounded-lg shadow ${
+            player.outOfBounds ? 'bg-red-600 text-white' : 'bg-gray-200 text-black'
+          }`}
+        >
+          🚧 Out of Bounds
+        </button>
+      </div>
+
+      {/* 3 Pointer / 4 Pointer / Wipe - mutual + exclusive */}
+      <div className="flex flex-wrap gap-2">
+        <button
+          onClick={() => toggle('threePointer', ['fourPointer', 'wipe'])}
+          disabled={player.wipe}
+          className={`px-3 py-2 rounded-lg shadow ${
+            player.wipe
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : player.threePointer
+              ? 'bg-green-600 text-white'
+              : 'bg-gray-200 text-black'
+          }`}
+        >
+          3️⃣ 3 Pointer
+        </button>
+        <button
+          onClick={() => toggle('fourPointer', ['threePointer', 'wipe'])}
+          disabled={player.wipe}
+          className={`px-3 py-2 rounded-lg shadow ${
+            player.wipe
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : player.fourPointer
+              ? 'bg-green-600 text-white'
+              : 'bg-gray-200 text-black'
+          }`}
+        >
+          4️⃣ 4 Pointer
+        </button>
+        <button
+          onClick={() => toggle('wipe', ['threePointer', 'fourPointer'])}
+          disabled={player.threePointer || player.fourPointer}
+          className={`px-3 py-2 rounded-lg shadow ${
+            player.threePointer || player.fourPointer
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : player.wipe
+              ? 'bg-red-600 text-white'
+              : 'bg-gray-200 text-black'
+          }`}
+        >
+          💥 Wipe
+        </button>
       </div>
     </div>
   )
